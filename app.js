@@ -33,7 +33,7 @@ app.post("/catalogos", function (request, response) {
 app.delete("/catalogos", function (request, response) {
     response.json({
         status: 1,
-        message: "este es un simple delete request"
+        message: "este es un simple delete request."
     });
 });
 
