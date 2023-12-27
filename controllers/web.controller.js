@@ -13,12 +13,17 @@ const ouUsuario = require("../models/sgm_usuarios.js");
 //get all data api with store procedure
 
 const getUsuario = async (request, response) => {
+
+
+    
     let connection;
     try {
         // create mysql connection
         connection = await mysql.createConnection(sc.dbStringConection());
 
         var params = request.body;
+
+
         ouUsuario.Accion = params.Accion;
         ouUsuario.Sgm_cUsuario = params.Sgm_cUsuario;
         ouUsuario.Sgm_cNombre = params.Sgm_cNombre;
@@ -35,6 +40,9 @@ const getUsuario = async (request, response) => {
                 response.json({ error: error.message });
 
             } else {
+
+                
+
                 response.json(results);
             }
         });

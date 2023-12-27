@@ -33,7 +33,7 @@ app.use("/api/evento", catalogsubastaRoutes );
 // pagina inicial
 
 app.get("/", function (require, response) {
-    response.send("<h3>Galpon Legado API</h3>");
+    response.send("<h3>Modulo - Gestion de Contenidos</h3>");
 });
 
 // pagina secundarias
