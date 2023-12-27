@@ -16,6 +16,8 @@ const router = express.Router();
 // servicios libres
 router.post('/sgm_usuarios/',webController.getUsuario);
 
+router.post('/documents/',webController.getPath);
+
 // servicios con seguridad JWT
 //router.post('/lgm_catalogo_bs/auth/',checkAuth,webController.getCatalogo);
 

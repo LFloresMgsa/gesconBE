@@ -20,14 +20,19 @@ const corsOptions ={
 
 app.set("port", PORT);
 
+
+//const documentRoot = 'D:\\pdfs';
+
+
 // Middlewares
+//app.use('/pdfs', express.static(documentRoot));
 
 app.use(cors(corsOptions)); // Use this after the variable declaration
 app.use(bodyParser.json());
 
 // Routes
 
-app.use("/api/evento", catalogsubastaRoutes );
+app.use("/api/gescon", catalogsubastaRoutes );
 
 
 // pagina inicial

@@ -3,6 +3,9 @@ Componente: Procedimientos No Transaccionales
 -------------------------------------------------*/
 const mysql = require("mysql");
 const sc = require("../database/StringConection");
+const path = require('path');
+const fs = require('fs');
+
 //const util = require('util');
 
 
@@ -11,6 +14,48 @@ const db = require("../database/db.js");
 const ouUsuario = require("../models/sgm_usuarios.js");
 
 //get all data api with store procedure
+
+
+
+  const getPath = async (req, res) => {
+
+   
+    
+    //const categories = ['category1', 'category2', 'category3'];        
+
+    
+
+    const category = req.query.category;
+
+
+    if (!category) {
+      return res.status(400).json({ error: 'Falta el parámetro "category" en la solicitud.' });
+    }
+
+    try {
+
+
+        
+  // Retroceder un nivel desde __dirname y luego ir a 'assets/documents'
+  const categoryPath = path.join(__dirname, '..', 'assets', 'documents', category);
+
+
+        fs.readdir(categoryPath, (err, files) => {
+          if (err) {
+            return res.status(500).json({ error: 'Error al leer la carpeta.' });
+          }
+      
+          //const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+          const filesWithPath = files.map(file => path.join(categoryPath, file));
+
+          res.json({ files: filesWithPath });
+        });
+        
+    } catch (error) {
+        console.error('Error reading folder:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    } 
+};
 
 const getUsuario = async (request, response) => {
 
@@ -58,7 +103,7 @@ const getUsuario = async (request, response) => {
 
 // export functions
 module.exports = {
-    getUsuario,
+    getUsuario, getPath
 };
 
 
