@@ -6,8 +6,15 @@ const md5 = require("md5");
 
 
 function getValidacion(Accion, user, password) {
+
+    
+
+
+
     // create mysql connection
     const connection = db.getConnection();
+
+  
 
     return new Promise((resolve, reject) => {
         connection.query("CALL sp_sgm_usuarios (?,?,?,?,?) ", [Accion, user, "", password, ""],
@@ -27,14 +34,41 @@ function getValidacion(Accion, user, password) {
 // LOGIN
 const token = async (request, response) => {
     try {
+
+
+
         const { Sgm_cUsuario, Sgm_cContrasena } = request.body;
 
         // debe consultar a la bd el usuario y contrasseña
         // si se encontro debe generar el jwt sino return
 
-        const _result = await getValidacion("BUSCARREGISTRO", Sgm_cUsuario, md5(Sgm_cContrasena));
 
-        if (!_result) {
+
+        const _result = await getValidacion("BUSCARREGISTRO", Sgm_cUsuario, Sgm_cContrasena);
+
+        
+
+        let token="";
+
+
+        if (_result && _result[0].length > 0 ) {
+            
+            if ( _result[0][0].Sgm_cUsuario){
+                token = JWT.sign({ Sgm_cUsuario }, "nfb32iur32ibfqfvi3vf932bg932g932", { expiresIn: 360000 });
+            }
+            else {
+                return response.status(422).json({
+                    errors: [
+                        {
+                            msg: "This user already not exists",
+                        }
+                    ]
+                })
+              }
+
+
+          } else {
+            // Mensaje de error
             return response.status(422).json({
                 errors: [
                     {
@@ -42,10 +76,9 @@ const token = async (request, response) => {
                     }
                 ]
             })
-        }
+          }
 
 
-        const token = JWT.sign({ Sgm_cUsuario }, "nfb32iur32ibfqfvi3vf932bg932g932", { expiresIn: 360000 });
 
 
        // console.log(token);

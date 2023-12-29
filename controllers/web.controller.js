@@ -1,3 +1,4 @@
+//WebController.js
 /*-------------------------------------------------
 Componente: Procedimientos No Transaccionales
 -------------------------------------------------*/
@@ -17,45 +18,53 @@ const ouUsuario = require("../models/sgm_usuarios.js");
 
 
 
-  const getPath = async (req, res) => {
-
-   
-    
-    //const categories = ['category1', 'category2', 'category3'];        
-
-    
-
+const getPath = async (req, res) => {
     const category = req.query.category;
-
-
+  
     if (!category) {
       return res.status(400).json({ error: 'Falta el parámetro "category" en la solicitud.' });
     }
-
+  
     try {
-
-
-        
-  // Retroceder un nivel desde __dirname y luego ir a 'assets/documents'
-  const categoryPath = path.join(__dirname, '..', 'assets', 'documents', category);
-
-
-        fs.readdir(categoryPath, (err, files) => {
-          if (err) {
-            return res.status(500).json({ error: 'Error al leer la carpeta.' });
-          }
-      
-          //const pdfFiles = files.filter(file => file.endsWith('.pdf'));
-          const filesWithPath = files.map(file => path.join(categoryPath, file));
-
-          res.json({ files: filesWithPath });
-        });
-        
+      const categoryPath = path.join(__dirname, '..', 'assets', 'documents', category);
+  
+      fs.readdir(categoryPath, (err, files) => {
+        if (err) {
+          return res.status(500).json({ error: 'Error al leer la carpeta.' });
+        }
+  
+        const fileNames = files.filter(file => file.endsWith('.pdf'));
+        res.json({ files: fileNames });
+      });
     } catch (error) {
-        console.error('Error reading folder:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error reading folder:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     } 
-};
+  };
+  
+  const servePDF = (req, res) => {
+    const { category, document } = req.query;
+    if (!category || !document) {
+      return res.status(400).json({ error: 'Parámetros incompletos.' });
+    }
+  
+    const filePath = path.join(__dirname, '..', 'assets', 'documents', category, document);
+  
+    if (fs.existsSync(filePath) && filePath.toLowerCase().endsWith('.pdf')) {
+      // Configura el encabezado para la respuesta PDF
+      res.setHeader('Content-Type', 'application/pdf');
+      
+      // Agrega el encabezado Content-Disposition para establecer el nombre del archivo
+      res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(document)}`);
+      console.log('Nombre del documento:', document);
+      
+      // Lee el contenido del archivo y envíalo como respuesta
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      res.status(404).json({ error: 'Archivo no encontrado.' });
+    }
+  };
+
 
 const getUsuario = async (request, response) => {
 
@@ -103,7 +112,7 @@ const getUsuario = async (request, response) => {
 
 // export functions
 module.exports = {
-    getUsuario, getPath
+    getUsuario, 
+    getPath,
+    servePDF,
 };
-
-
